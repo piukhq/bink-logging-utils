@@ -34,8 +34,6 @@ build-backend = "poetry_dynamic_versioning.backend"
 
 [tool.poetry-dynamic-versioning]
 enable = true
-vcs = "git"
-pattern = '^((?P<epoch>\d+)!)?(?P<base>\d+(\.\d+)*)'
 
 [tool.poetry-dynamic-versioning.substitution]
 files = ["bink_logging_utils/version.py"]
