@@ -93,6 +93,6 @@ Dockerfile
 ...
 
 CMD [ "gunicorn", "--workers=2", "--error-logfile=-", "--access-logfile=-", \
-        "--bind=0.0.0.0:9000", "--logger-class=path.to.CustomGunicornLogger", \
-        "app.wsgi" ]
+      "--bind=0.0.0.0:9000", "--logger-class=path.to.CustomGunicornLogger", \
+      "app.wsgi" ]
 ```
