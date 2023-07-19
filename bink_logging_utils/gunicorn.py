@@ -1,13 +1,18 @@
 import logging
+import sys
 from typing import TYPE_CHECKING
-
-from gunicorn.glogging import Logger
 
 from bink_logging_utils.filters import GunicornAccessHealthzFilter
 from bink_logging_utils.handlers import loguru_intercept_handler_factory
 
-if TYPE_CHECKING:
-    from gunicorn.config import Config
+try:
+    from gunicorn.glogging import Logger
+
+    if TYPE_CHECKING:
+        from gunicorn.config import Config
+
+except ImportError:
+    sys.exit("Gunicorn extra not installed.")
 
 
 def gunicorn_logger_factory(
