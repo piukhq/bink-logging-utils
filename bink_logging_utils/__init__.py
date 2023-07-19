@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 from loguru import logger
 
 if TYPE_CHECKING:
-    from loguru import FilterDict, FilterFunction, PatcherFunction, Record
+    from loguru import FilterDict, FilterFunction, FormatFunction, PatcherFunction, Record
 
 
 def init_loguru_root_sink(  # noqa: PLR0913
@@ -14,7 +14,7 @@ def init_loguru_root_sink(  # noqa: PLR0913
     show_pid: bool,
     log_filter: "str | FilterDict | FilterFunction | None" = None,
     custom_patcher: "PatcherFunction | None" = None,
-    extra_format: str | None = None,
+    custom_formatter: "str | FormatFunction | None" = None,
 ) -> None:
     """
     Initialise Loguru sink.
@@ -24,7 +24,7 @@ def init_loguru_root_sink(  # noqa: PLR0913
     show_pid: adds pid `| <yellow>pid: {process}</yellow> |` to the default format
     log_filter: add log filters to the default sink
     custom_patcher: overrides the path_translation patcher
-    extra_format: loguru formatting string that will be added right after the log level
+    custom_formatter: string or function that overrides the default log format
     """
 
     def path_translation(record: "Record") -> None:
@@ -41,16 +41,12 @@ def init_loguru_root_sink(  # noqa: PLR0913
         time, rest = default_format.split("|", 1)
         default_format = time + "| <yellow>pid: {process}</yellow> |" + rest
 
-    if extra_format:
-        left, right = default_format.rsplit("|", 1)
-        default_format = left + extra_format + right
-
     logger.remove(0)
     logger.add(
         sink=sys.stderr,
         serialize=json_logging,
         colorize=not json_logging,
-        format=default_format,
+        format=custom_formatter or default_format,
         level=sink_log_level,
         filter=log_filter,
     )
