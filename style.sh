@@ -44,9 +44,9 @@ info "xenon"
 xenon --no-assert -a A -m B -b B .
 
 info "ruff"
-ruff logging_utils_lib
+ruff .
 
 info "refurb"
-refurb logging_utils_lib
+refurb .
 
 success "all checks completed."
