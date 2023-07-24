@@ -23,15 +23,22 @@ def init_loguru_root_sink(  # noqa: PLR0913
     sink_log_level: anything below the provided level will not be outputted
     show_pid: adds pid `| <yellow>pid: {process}</yellow> |` to the default format
     log_filter: add log filters to the default sink
-    custom_patcher: overrides the path_translation patcher
+    custom_patcher: custom patcher to run after the default funnelled_record_path handling
     custom_formatter: string or function that overrides the default log format
     """
 
-    def path_translation(record: "Record") -> None:
-        if funnelled_record_path := record["extra"].pop("funnelled_record_path", None):
-            record["name"] = funnelled_record_path["name"]
-            record["function"] = funnelled_record_path["func"]
-            record["line"] = funnelled_record_path["line"]
+    class LoguruSinkPatcher:
+        def __init__(self, extra_patcher: "PatcherFunction | None") -> None:
+            self.extra_patcher = extra_patcher
+
+        def __call__(self, record: "Record") -> None:
+            if funnelled_record_path := record["extra"].pop("funnelled_record_path", None):
+                record["name"] = funnelled_record_path["name"]
+                record["function"] = funnelled_record_path["func"]
+                record["line"] = funnelled_record_path["line"]
+
+            if self.extra_patcher:
+                self.extra_patcher(record)
 
     default_format = (
         "<green>{time:YYYY-MM-DD HH:mm:ss.SSS}</green> | <level>{level}</level> | "
@@ -50,4 +57,4 @@ def init_loguru_root_sink(  # noqa: PLR0913
         level=sink_log_level,
         filter=log_filter,
     )
-    logger.configure(patcher=custom_patcher or path_translation)
+    logger.configure(patcher=LoguruSinkPatcher(custom_patcher))

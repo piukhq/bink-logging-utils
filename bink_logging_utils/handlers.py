@@ -49,7 +49,7 @@ def loguru_intercept_handler_factory(
                 # https://docs.gunicorn.org/en/stable/settings.html#access-log-format
                 # i.e `X-Azure-Ref` request header is represented as `{x-azure-ref}i`
                 extras |= {
-                    "x_azure_ref": cast(str, record.args["{x-azure-ref}i"]),  # type: ignore [index,call-overload]
+                    "x-azure-ref": cast(str, record.args["{x-azure-ref}i"]),  # type: ignore [index,call-overload]
                 }
 
             if add_extras:
